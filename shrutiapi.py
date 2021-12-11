@@ -30,7 +30,10 @@ def process_message(message):
         config=speech.RecognitionConfig(
             encoding=speech.RecognitionConfig.AudioEncoding.OGG_OPUS,
             sample_rate_hertz=16000,
-            language_code='en-US')
+            # use_enhanced=True,
+            # A model must be specified to use enhanced model.
+            # model="phone_call",
+            language_code='en-IN')
         response = client.recognize(config=config, audio=audio)
         # Add the transcript from response.results.alternatives to message['googlespeech]
         if response.results:
