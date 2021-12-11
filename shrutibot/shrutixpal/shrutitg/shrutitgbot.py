@@ -50,14 +50,7 @@ def facts_to_str(user_data):
     logger.info("Converted facts to string")
     return "\n".join(facts).join(['\n', '\n'])
 
-def get_rasa_response(username,message_text,hostname="http://localhost"):
-    logger.info("Trying")
-    resturl=":5005/webhooks/rest/webhook"
-    jsondata={}
-    jsondata['sender']=username
-    jsondata['message']=message_text
-    response=requests.post(hostname+resturl,json=jsondata)
-    return response.json()
+
 
 def get_shruti_response(username,message,hostname="http://localhost"):
     resturl=":5000/listener"
