@@ -40,6 +40,17 @@ def process_message(message):
                                         }   
     return message
 
+
+def get_rasa_response(username,message_text,hostname="http://localhost"):
+    logger.info("Trying")
+    resturl=":5005/webhooks/rest/webhook"
+    jsondata={}
+    jsondata['sender']=username
+    jsondata['message']=message_text
+    response=requests.post(hostname+resturl,json=jsondata)
+    return response.json()
+
+
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0')
 
