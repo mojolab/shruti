@@ -39,7 +39,7 @@ exit_text = u'\U0001F44B Bye'
 #                        ]
 
 main_menu_header_text = '''\
-    Hi! My name is Zhu Li.\n
+    Hi! My name is Shruti.\n
 '''
 
 def facts_to_str(user_data):
@@ -59,7 +59,7 @@ def get_rasa_response(username,message_text,hostname="http://localhost"):
     response=requests.post(hostname+resturl,json=jsondata)
     return response.json()
 
-def get_zhuli_response(username,message,hostname="http://localhost"):
+def get_shruti_response(username,message,hostname="http://localhost"):
     resturl=":5000/listener"
     jsondata={}
     jsondata['sender']=username
@@ -137,7 +137,7 @@ def loop(update: Update, context: CallbackContext):
     if update.message.text=="/bye":
         return exit(update,context)
     logger.info("{} {}".format(context.user_data['member'].username,update.message.text))
-    text=get_zhuli_response(username=context.user_data['member'].username, message=update.message)
+    text=get_shruti_response(username=context.user_data['member'].username, message=update.message)
     logger.info(str(text))
     if verbose:
         update.message.reply_text(str(text), parse_mode=ParseMode.HTML, reply_markup=ReplyKeyboardRemove())
