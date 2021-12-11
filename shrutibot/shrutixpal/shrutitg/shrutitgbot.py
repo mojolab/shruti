@@ -22,7 +22,7 @@ verbose=True
 
 
 
-memberbotconfig = xetrapal.karma.load_config(configfile="/opt/shrutibot-appdata/shrutitgbot")
+memberbotconfig = xetrapal.karma.load_config(configfile="/opt/shrutibot-appdata/shrutitgbot.conf")
 shrutitgbot=xetrapal.telegramastras.XetrapalTelegramBot(config=memberbotconfig, logger=xpal.shrutitgbotxpal.logger)
 logger = shrutitgbot.logger
 GETMOBILE, PROCESS_MESSAGE = range(2)
