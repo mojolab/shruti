@@ -33,10 +33,11 @@ def process_message(message):
             language_code='en-US')
         response = client.recognize(config=config, audio=audio)
         # Add the transcript from response.results.alternatives to message['googlespeech]
-        message['googlespeech'] = {
-                                    "transcript":response.results[0].alternatives[0].transcript,
-                                    "confidence":response.results[0].alternatives[0].confidence
-                                    }   
+        if response.results:
+            message['googlespeech'] = {
+                                        "transcript":response.results[0].alternatives[0].transcript,
+                                        "confidence":response.results[0].alternatives[0].confidence
+                                        }   
     return message
 
 if __name__ == '__main__':
