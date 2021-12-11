@@ -23,8 +23,8 @@ verbose=True
 
 
 memberbotconfig = xetrapal.karma.load_config(configfile="/opt/zhulibot-appdata/shrutitgbot")
-shrutitgbottrapal.telegramastras.XetrapalTelegramBot(config=memberbotconfig, logger=xpal.shrutitgbotxpal.logger)
-logger = shrutitgboter
+shrutitgbot=xetrapal.telegramastras.XetrapalTelegramBot(config=memberbotconfig, logger=xpal.shrutitgbotxpal.logger)
+logger = shrutitgbot.logger
 GETMOBILE, PROCESS_MESSAGE = range(2)
 
 send_contact_text = u'\U0001F4CD Send Contact'
