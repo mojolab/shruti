@@ -33,7 +33,7 @@ def process_message(message):
             # use_enhanced=True,
             # A model must be specified to use enhanced model.
             # model="phone_call",
-            language_code='en-IN')
+            language_code='hi-IN')
         response = client.recognize(config=config, audio=audio)
         # Add the transcript from response.results.alternatives to message['googlespeech]
         if response.results:
