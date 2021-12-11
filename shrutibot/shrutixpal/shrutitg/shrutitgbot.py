@@ -100,8 +100,7 @@ def get_media(message):
         media_id = message.photo[-1]
         # generate file name from message.from_user.id and media_id
         filename = '{}_{}.jpg'.format(message.from_user.username, media_id.file_unique_id)
-        media_id.get_file().download(custom_path=os.path.join(xpal.shrutitgbot
-    xpal.sessionpath, filename))
+        media_id.get_file().download(custom_path=os.path.join(xpal.shrutitgbotxpal.sessionpath, filename))
         media['type']='photo'
         media['path']=os.path.join(xpal.shrutitgbot
     xpal.sessionpath, filename)
