@@ -1,4 +1,4 @@
-# Shwaas Telegram bot
+# Shruti Telegram bot
 
 ### Install Xetrapal
 
