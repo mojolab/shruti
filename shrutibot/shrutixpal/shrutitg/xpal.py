@@ -19,23 +19,23 @@ import requests
 from xetrapal import gdastras
 from xetrapal import smsastras
 a = xetrapal.karma.load_xpal_smriti(
-    "/opt/zhulibot-appdata/zhulibotxpal.json")
+    "/opt/shrutibot-appdata/shrutibotxpal.json")
 a.save()
 a.reload()
-zhulitgbotxpal = xetrapal.Xetrapal(a)
-zhulitgbotxpal.dhaarana(gdastras)
-zhulitgbotxpal.dhaarana(smsastras)
-#zhulitgbotgd = zhulitgbotxpal.gd_get_googledriver()
-#sms = zhulitgbotxpal.get_sms_astra()
+shrutitgbotxpal = xetrapal.Xetrapal(a)
+shrutitgbotxpal.dhaarana(gdastras)
+shrutitgbotxpal.dhaarana(smsastras)
+#shrutitgbotgd = shrutitgbotxpal.gd_get_googledriver()
+#sms = shrutitgbotxpal.get_sms_astra()
 #sconfig = xetrapal.karma.load_config(a.configfile)
 #mmiurl = sconfig.get("MapMyIndia", "apiurl")
 #mmikey = sconfig.get("MapMyIndia", "apikey")
 #mmiurl = mmiurl + mmikey + "/"
 
 # Setting up mongoengine connections
-zhulitgbotxpal.logger.info("Setting up MongoEngine")
+shrutitgbotxpal.logger.info("Setting up MongoEngine")
 mongoengine.disconnect()
-mongoengine.connect('zhulitgbot', alias='default')
+mongoengine.connect('shrutitgbot', alias='default')
 
 
 
@@ -54,9 +54,9 @@ def validate_member_dict(memberdict, new=True):
     validation = utils.validate_dict(
         memberdict, required_keys=required_keys, string_keys=string_keys, mobile_nums=mobile_nums)
     if validation['status'] is True:
-        zhulitgbotxpal.logger.info("memberdict: " + validation['message'])
+        shrutitgbotxpal.logger.info("memberdict: " + validation['message'])
     else:
-        zhulitgbotxpal.logger.error("memberdict: " + validation['message'])
+        shrutitgbotxpal.logger.error("memberdict: " + validation['message'])
     return validation
 
 
@@ -131,15 +131,15 @@ def update_member(username, respdict):
 def update_member_repayments(repayments):
     for r in repayments:
         mem = documents.Member.objects(username=r['from'])[0]
-        zhulitgbotxpal.logger.info(mem.to_json())
+        shrutitgbotxpal.logger.info(mem.to_json())
         mem['repayments'][r['to']] += r['amount']
         mem.save()
-        zhulitgbotxpal.logger.info(mem.to_json())
+        shrutitgbotxpal.logger.info(mem.to_json())
         mem2 = documents.Member.objects(username=r['to'])[0]
-        zhulitgbotxpal.logger.info(mem2.to_json())
+        shrutitgbotxpal.logger.info(mem2.to_json())
         mem2['repayments'][r['from']] += -r['amount']
         mem2.save()
-        zhulitgbotxpal.logger.info(mem2.to_json())
+        shrutitgbotxpal.logger.info(mem2.to_json())
 
 def update_member_balance(members):
     for member in members:
@@ -219,7 +219,7 @@ Xchanges
 
 
 def get_xchange(xchange_id=None):
-    zhulitgbotxpal.logger.info((xchange_id))
+    shrutitgbotxpal.logger.info((xchange_id))
     if xchange_id is None:
         try:
             xchange = documents.Xchange.objects
@@ -237,7 +237,7 @@ def get_xchange(xchange_id=None):
 
 
 def create_xchange(xchangedict):
-    zhulitgbotxpal.logger.info(utils.new_xchange_id())
+    shrutitgbotxpal.logger.info(utils.new_xchange_id())
     try:
         xchange = documents.Xchange(
             xchange_id=utils.new_xchange_id(), **xchangedict)
