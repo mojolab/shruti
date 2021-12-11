@@ -185,7 +185,7 @@ states={
 
 def setup():
     # Create the Updater and pass it your bot's token.
-    updater = shrutitgbot.updaXter
+    updater = shrutitgbot.updater
     # Get the dispatcher to register handlers
     dp = updater.dispatcher
     # Add conversation handler with the states CHOOSING, TYPING_CHOICE and TYPING_REPLY
