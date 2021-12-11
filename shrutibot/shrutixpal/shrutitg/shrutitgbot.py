@@ -2,7 +2,7 @@
 #
 # Simple Bot to reply to Telegram messages
 # This program is dedicated to the public domain under the CC0 license.
-# from shrutitgbot.xpal import *
+# from shrutitgbot import *
 from . import xpal
 from . import utils
 import requests, json
@@ -22,9 +22,9 @@ verbose=True
 
 
 
-memberbotconfig = xetrapal.karma.load_config(configfile="/opt/zhulibot-appdata/shrutitgbot.conf")
-shrutitgbot = xetrapal.telegramastras.XetrapalTelegramBot(config=memberbotconfig, logger=xpal.shrutitgbotxpal.logger)
-logger = shrutitgbot.logger
+memberbotconfig = xetrapal.karma.load_config(configfile="/opt/zhulibot-appdata/shrutitgbot")
+shrutitgbottrapal.telegramastras.XetrapalTelegramBot(config=memberbotconfig, logger=xpal.shrutitgbotxpal.logger)
+logger = shrutitgboter
 GETMOBILE, PROCESS_MESSAGE = range(2)
 
 send_contact_text = u'\U0001F4CD Send Contact'
@@ -102,35 +102,28 @@ def get_media(message):
         filename = '{}_{}.jpg'.format(message.from_user.username, media_id.file_unique_id)
         media_id.get_file().download(custom_path=os.path.join(xpal.shrutitgbotxpal.sessionpath, filename))
         media['type']='photo'
-        media['path']=os.path.join(xpal.shrutitgbot
-    xpal.sessionpath, filename)
+        media['path']=os.path.join(xpal.shrutitgbotxpal.sessionpath, filename)
     if message.document:
         media_id = message.document 
         # generate file name from message.from_user.id and media_id
         filename = '{}_{}'.format(message.from_user.username, media_id.file_name)
-        media_id.get_file().download(custom_path=os.path.join(xpal.shrutitgbot
-    xpal.sessionpath, filename))
+        media_id.get_file().download(custom_path=os.path.join(xpal.shrutitgbotxpal.sessionpath, filename))
         media['type']='document'
-        media['path']=os.path.join(xpal.shrutitgbot
-    xpal.sessionpath, filename)
+        media['path']=os.path.join(xpal.shrutitgbotxpal.sessionpath, filename)
     if message.voice:
         media_id = message.voice
         # generate file name from message.from_user.id and media_id
         filename = '{}_{}.ogg'.format(message.from_user.username, media_id.file_unique_id)
-        media_id.get_file().download(custom_path=os.path.join(xpal.shrutitgbot
-    xpal.sessionpath, filename))
+        media_id.get_file().download(custom_path=os.path.join(xpal.shrutitgbotxpal.sessionpath, filename))
         media['type']='voice'
-        media['path']=os.path.join(xpal.shrutitgbot
-    xpal.sessionpath, filename)
+        media['path']=os.path.join(xpal.shrutitgbotxpal.sessionpath, filename)
     if message.audio:
         media_id = message.audio
         # generate file name from message.from_user.id and media_id
         filename = '{}_{}'.format(message.from_user.username, media_id.file_name)
-        media_id.get_file().download(custom_path=os.path.join(xpal.shrutitgbot
-    xpal.sessionpath, filename))
+        media_id.get_file().download(custom_path=os.path.join(xpal.shrutitgbotxpal.sessionpath, filename))
         media['type']='audio'
-        media['path']=os.path.join(xpal.shrutitgbot
-    xpal.sessionpath, filename)
+        media['path']=os.path.join(xpal.shrutitgbotxpal.sessionpath, filename)
     return media
 def loop(update: Update, context: CallbackContext):
     if update.message.text=="/bye":
@@ -192,7 +185,7 @@ states={
 
 def setup():
     # Create the Updater and pass it your bot's token.
-    updater = shrutitgbot.updater
+    updater = shrutitgbotter
     # Get the dispatcher to register handlers
     dp = updater.dispatcher
     # Add conversation handler with the states CHOOSING, TYPING_CHOICE and TYPING_REPLY
@@ -213,13 +206,13 @@ def setup():
 
 
 def single_update():
-    p = shrutitgbot.get_latest_updates()
+    p = shrutitgbotlatest_updates()
     for update in p:
-        shrutitgbot.updater.dispatcher.process_update(update)
+        shrutitgbotter.dispatcher.process_update(update)
     return p
 
 
 if __name__ == '__main__':
     setup()
-    shrutitgbot.updater.start_polling()
-    shrutitgbot.updater.idle()
+    shrutitgbotter.start_polling()
+    shrutitgbotter.idle()
