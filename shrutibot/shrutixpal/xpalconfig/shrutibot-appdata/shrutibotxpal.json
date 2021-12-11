@@ -1,0 +1,11 @@
+{
+    "Jeeva": {
+        "datapath": "/opt/shrutibot-appdata/xetrapal-data",
+        "name": "ShrutiBot",
+        "sessionpathprefix": "ShrutiBot-XpalSession",
+        "urlbase": "http://192.168.56.101/xetrapal"
+    },
+    "Pygsheets": {
+        "avdrive": "/opt/shrutibot-appdata/xetrapal-auth/shrutibotdrive.json"
+    }
+}
