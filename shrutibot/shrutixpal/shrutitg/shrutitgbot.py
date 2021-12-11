@@ -185,7 +185,7 @@ states={
 
 def setup():
     # Create the Updater and pass it your bot's token.
-    updater = shrutitgbot.updater
+    updater = shrutitgbot.updaXter
     # Get the dispatcher to register handlers
     dp = updater.dispatcher
     # Add conversation handler with the states CHOOSING, TYPING_CHOICE and TYPING_REPLY
@@ -206,13 +206,13 @@ def setup():
 
 
 def single_update():
-    p = shrutitgbotlatest_updates()
+    p = shrutitgbot.get_latest_updates()
     for update in p:
-        shrutitgbotter.dispatcher.process_update(update)
+        shrutitgbot.updater.dispatcher.process_update(update)
     return p
 
 
 if __name__ == '__main__':
     setup()
-    shrutitgbotter.start_polling()
-    shrutitgbotter.idle()
+    shrutitgbot.updater.start_polling()
+    shrutitgbot.updater.idle()
