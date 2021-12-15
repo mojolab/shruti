@@ -22,7 +22,7 @@ def listener():
 
 def process_message(message):
     # do something with the message
-    if message['media'] is not None and message['media']['type']=='voice':
+    if message['media'] is not None and message['media']['type']=='voice' or message['media']['type']=='audio':
         client=speech.SpeechClient()
         with io.open(message['media']['path'], 'rb') as audio_file:
             content = audio_file.read()
