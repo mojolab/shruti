@@ -4,7 +4,7 @@ Simple Flask API to receive a message as a JSON object and return a response as 
 messagelogfile="../data/messagelog"
 from datetime import datetime
 from flask import Flask, request, jsonify
-import io
+import io, os
 from google.cloud import speech
 
 app = Flask(__name__)
@@ -21,19 +21,31 @@ def listener():
      return jsonify(input_json)
 
 def process_message(message):
+    if message['media'] is None:
+        return message
     # do something with the message
     if message['media'] is not None and message['media']['type']=='voice' or message['media']['type']=='audio':
+        samplerate=int(os.popen("/usr/bin/ffprobe -v error -show_streams {} | grep sample_rate".format(message['media']['path'])).read().strip().split("=")[1])
+        if samplerate>16000:
+            samplerate=16000
+        filetype = message['media']['path'].split(".")[-1]
+        if filetype == 'ogg':
+            enc=speech.RecognitionConfig.AudioEncoding.OGG_OPUS
+        elif filetype == 'wav':
+            enc=speech.RecognitionConfig.AudioEncoding.LINEAR16
+        
+        print("Encoding: {}, Sample Rate:{}".format(enc,samplerate))
         client=speech.SpeechClient()
         with io.open(message['media']['path'], 'rb') as audio_file:
             content = audio_file.read()
         audio=speech.RecognitionAudio(content=content)
         config=speech.RecognitionConfig(
-            encoding=speech.RecognitionConfig.AudioEncoding.OGG_OPUS,
-            sample_rate_hertz=16000,
-            # use_enhanced=True,
+            encoding=enc,
+            sample_rate_hertz=samplerate,
+            use_enhanced=True,
             # A model must be specified to use enhanced model.
-            # model="phone_call",
-            language_code='hi-IN')
+            model="phone_call",
+            language_code='en-US')
         response = client.recognize(config=config, audio=audio)
         # Add the transcript from response.results.alternatives to message['googlespeech]
         if response.results:
@@ -41,6 +53,8 @@ def process_message(message):
                                         "transcript":response.results[0].alternatives[0].transcript,
                                         "confidence":response.results[0].alternatives[0].confidence
                                         }   
+        else:
+            print(response)
     return message
 
 
