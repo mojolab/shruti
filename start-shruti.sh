@@ -1,6 +1,18 @@
 #!/usr/bin/bash
 export GOOGLE_APPLICATION_CREDENTIALS="/opt/shrutibot-appdata/shrutivoice.json"
 
+# if /opt/shrutibot-appdata/shrutibottgtoken contains '<REPLACE WITH YOUR BOT TOKEN>' break script
+if [ "$(cat /opt/shrutibot-appdata/shrutibottgtoken)" == "<REPLACE WITH YOUR BOT TOKEN>" ]; then
+    echo "Please replace the token in /opt/shrutibot-appdata/shrutibottgtoken with your bot token"
+    exit 0
+fi
+
+# if /opt/shrutibot-appdata/shrutivoice.json does not exist or is empty break script
+if [ ! -s "/opt/shrutibot-appdata/shrutivoice.json" ]; then
+    echo "Please copy the json file to /opt/shrutibot-appdata/shrutivoice.json"
+    exit 0
+fi  
+
 # if /data/db does not exist, create it
 if [ ! -d "/data/db" ]; then
     mkdir -p /data/db
@@ -21,11 +33,7 @@ then
     python3 shrutiapi.py &
 fi
 
-# if /opt/shrutibot-appdata/shrutibottgtoken contains '<REPLACE WITH YOUR BOT TOKEN>' break script
-if [ "$(cat /opt/shrutibot-appdata/shrutibottgtoken)" == "<REPLACE WITH YOUR BOT TOKEN>" ]; then
-    echo "Please replace the token in /opt/shrutibot-appdata/shrutibottgtoken with your bot token"
-    exit 1
-fi
+
 
 # if runshrutibot.py is not running start it
 if ! pgrep -x runshrutibot.py > /dev/null
