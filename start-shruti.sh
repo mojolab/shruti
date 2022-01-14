@@ -1,4 +1,5 @@
 #!/usr/bin/bash
+
 export GOOGLE_APPLICATION_CREDENTIALS="/opt/shrutibot-appdata/shrutivoice.json"
 
 # if /opt/shrutibot-appdata/shrutibottgtoken contains '<REPLACE WITH YOUR BOT TOKEN>' break script
@@ -36,8 +37,7 @@ fi
 
 
 # if runshrutibot.py is not running start it
-if ! pgrep -x runshrutibot.py > /dev/null
-then
+if ! pgrep -x runshrutibot.py > /dev/null; then
     cd /shruti/shrutibot/shrutixpal
     python3 runshrutibot.py &
 fi

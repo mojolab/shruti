@@ -13,11 +13,11 @@ app = Flask(__name__)
 def listener():
      input_json = request.get_json(force=True) 
      input_json['timercvd'] = datetime.now().strftime("%Y-%m-%d %H:%M:%S IST")    
-    
-     with open(messagelogfile, 'a') as f:
-         f.write(str(input_json) + '\n')
      # send input_json to processing function
      result = process_message(input_json)
+     with open(messagelogfile, 'a') as f:
+         f.write(str(result) + '\n')
+     
      return jsonify(input_json)
 
 def process_message(message):
@@ -29,7 +29,7 @@ def process_message(message):
         if samplerate>16000:
             samplerate=16000
         filetype = message['media']['path'].split(".")[-1]
-        if filetype == 'ogg':
+        if filetype == 'ogg' or filetype == 'opus':
             enc=speech.RecognitionConfig.AudioEncoding.OGG_OPUS
         elif filetype == 'wav':
             enc=speech.RecognitionConfig.AudioEncoding.LINEAR16
@@ -42,10 +42,10 @@ def process_message(message):
         config=speech.RecognitionConfig(
             encoding=enc,
             sample_rate_hertz=samplerate,
-            use_enhanced=True,
+            # use_enhanced=True,
             # A model must be specified to use enhanced model.
-            model="phone_call",
-            language_code='en-US')
+            # model="phone_call",
+            language_code='hi-IN')
         response = client.recognize(config=config, audio=audio)
         # Add the transcript from response.results.alternatives to message['googlespeech]
         if response.results:
