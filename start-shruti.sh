@@ -1,4 +1,5 @@
 #!/usr/bin/bash
+
 export GOOGLE_APPLICATION_CREDENTIALS="/opt/shrutibot-appdata/shrutivoice.json"
 
 # if /data/db does not exist, create it
@@ -28,8 +29,7 @@ if [ "$(cat /opt/shrutibot-appdata/shrutibottgtoken)" == "<REPLACE WITH YOUR BOT
 fi
 
 # if runshrutibot.py is not running start it
-if ! pgrep -x runshrutibot.py > /dev/null
-then
+if ! pgrep -x runshrutibot.py > /dev/null; then
     cd /shruti/shrutibot/shrutixpal
     python3 runshrutibot.py &
 fi
