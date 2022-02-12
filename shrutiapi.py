@@ -1,7 +1,7 @@
 '''
 Simple Flask API to receive a message as a JSON object and return a response as a JSON object.
 '''
-messagelogfile="/opt/shrutibot-appdata/messagelog"
+messagelogfile="/opt/shrutibot-appdata/samyog-data/ messagelog"
 from datetime import datetime
 from flask import Flask, request, jsonify
 import io, os
@@ -17,11 +17,19 @@ def listener():
      result = process_message(input_json)
      with open(messagelogfile, 'a') as f:
          f.write(str(result) + '\n')
-     
      return jsonify(result)
 
 def process_message(message):
     if message['media'] is None:
+        delimiter=None
+        if "🔗" in message['text']:
+            delimiter="🔗"
+        if "|" in message['text']:
+            delimiter="|"
+        if delimiter is not None:
+            print(message['text'].split(delimiter))
+            with open("/opt/shrutibot-appdata/samyog-data/relationships","a") as f:
+                f.write(message['text'].replace(delimiter,"|")+"\n")
         message['rasaresponse'] = get_rasa_response(message['sender'],message['text'])[0]['text']
         return message
     # do something with the message
