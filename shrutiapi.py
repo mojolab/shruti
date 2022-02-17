@@ -1,7 +1,7 @@
 '''
 Simple Flask API to receive a message as a JSON object and return a response as a JSON object.
 '''
-messagelogfile="/opt/shrutibot-appdata/samyog-data/ messagelog"
+messagelogfile="/opt/shrutibot-appdata/samyog-data/messagelog"
 from datetime import datetime
 from flask import Flask, request, jsonify
 import io, os
