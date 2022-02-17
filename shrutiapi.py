@@ -30,7 +30,7 @@ def process_message(message):
             print(message['text'].split(delimiter))
             with open("/opt/shrutibot-appdata/samyog-data/relationships","a") as f:
                 f.write(message['text'].replace(delimiter,"|")+"\n")
-        message['rasaresponse'] = get_rasa_response(message['sender'],message['text'])[0]['text']
+        # message['rasaresponse'] = get_rasa_response(message['sender'],message['text'])[0]['text']
         return message
     # do something with the message
     if message['media'] is not None and message['media']['type']=='voice' or message['media']['type']=='audio':
