@@ -73,8 +73,12 @@ def get_rasa_response(username,message_text,hostname="http://172.17.0.1"):
     jsondata={}
     jsondata['sender']=username
     jsondata['message']=message_text
-    response=requests.post(hostname+resturl,json=jsondata)
-    return response.json()
+    try:
+        response=requests.post(hostname+resturl,json=jsondata)
+        return response.json()
+    except Exception as e:
+        jsondata['error']=str(e)
+        return jsondata
 
 
 if __name__ == '__main__':
