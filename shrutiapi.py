@@ -62,7 +62,7 @@ def process_message(message):
                                         "transcript":response.results[0].alternatives[0].transcript,
                                         "confidence":response.results[0].alternatives[0].confidence
                                         } 
-            message['rasaresponse']=get_rasa_response(message['sender'],message['googlespeech']['transcript'])[0]['text']  
+            #message['rasaresponse']=get_rasa_response(message['sender'],message['googlespeech']['transcript'])[0]['text']  
         else:
             print(response)
     return message
