@@ -58,6 +58,7 @@ def get_shruti_response(username,message,hostname="http://localhost"):
     jsondata['sender']=username
     jsondata['text']=message.text
     jsondata['media']=None
+    jsondata['source']="telegram"
     if message.photo or message.document or message.voice or message.audio:
         logger.info("Media found")
         media=get_media(message)
