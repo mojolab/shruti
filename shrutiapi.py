@@ -52,7 +52,7 @@ def process_message(message):
             message['googlespeech'] = {
                                         "transcript":response.results[0].alternatives[0].transcript,
                                         "confidence":response.results[0].alternatives[0].confidence
-                                        }   
+                                    }   
         else:
             print(response)
     return message

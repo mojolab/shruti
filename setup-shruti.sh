@@ -9,5 +9,5 @@ fi
 
 cd /
 sh -c "$(curl -fsSL https://hackergram.org/xpal/installxpal.sh)"
-pip3 install mongoengine google-cloud-speech
+pip3 install mongoengine google-cloud-speech jupyterlab
 
