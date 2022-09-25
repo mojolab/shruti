@@ -96,7 +96,7 @@ def get_member_by_tgid(tgid):
 def create_member(respdict):
     member = documents.Member.objects(username=respdict['username'])
     if len(member) > 0:
-        return "Driver with that username Exists"
+        return "Member with that username exists"
     if "_id" in respdict.keys():
         respdict.pop('_id')
     try:

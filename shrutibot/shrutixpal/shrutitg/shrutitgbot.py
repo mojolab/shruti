@@ -42,6 +42,7 @@ main_menu_header_text = '''\
     Hi! My name is Shruti.\n
 '''
 
+# Create a triple
 def facts_to_str(user_data):
     facts = list()
     logger.info("Converting facts to string")
@@ -51,7 +52,7 @@ def facts_to_str(user_data):
     return "\n".join(facts).join(['\n', '\n'])
 
 
-
+# Send a message to and get a response from the locally running Shruti API
 def get_shruti_response(username,message,hostname="http://localhost"):
     resturl=":5000/listener"
     jsondata={}
