@@ -135,6 +135,8 @@ def loop(update: Update, context: CallbackContext):
         except Exception as e:
             update.message.reply_text("Error: {}".format(str(e)), parse_mode=ParseMode.HTML, reply_markup=ReplyKeyboardRemove())
     if type(response)==list:
+        if len(response)>50:
+            response=response[:50]
         for line in response:
             update.message.reply_text(line, parse_mode=ParseMode.HTML, reply_markup=ReplyKeyboardRemove())
     else:
