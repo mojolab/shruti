@@ -3,6 +3,7 @@
 # Simple Bot to reply to Telegram messages
 # This program is dedicated to the public domain under the CC0 license.
 # from shrutitgbot.xpal import *
+# SHRUTI - This is a class of bots that Mojolab, Hackergram and other linked entities use for the purpose of comprehension and gateway building
 from . import xpal
 from . import utils
 import requests, json

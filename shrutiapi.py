@@ -18,7 +18,7 @@ def listener():
      with open(messagelogfile, 'a') as f:
          f.write(str(result) + '\n')
      return jsonify(result)
-     
+
 
 def process_message(message):
     if message['media'] is None:
