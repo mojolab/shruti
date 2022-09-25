@@ -130,7 +130,10 @@ def loop(update: Update, context: CallbackContext):
     logger.info(str(text))
     response=text['response']
     if verbose:
-        update.message.reply_text(str(text), parse_mode=ParseMode.HTML, reply_markup=ReplyKeyboardRemove())
+        try:
+            update.message.reply_text(str(text), parse_mode=ParseMode.HTML, reply_markup=ReplyKeyboardRemove())
+        except Exception as e:
+            update.message.reply_text("Error: {}".format(str(e)), parse_mode=ParseMode.HTML, reply_markup=ReplyKeyboardRemove())
     if type(response)==list:
         for line in response:
             update.message.reply_text(line, parse_mode=ParseMode.HTML, reply_markup=ReplyKeyboardRemove())
