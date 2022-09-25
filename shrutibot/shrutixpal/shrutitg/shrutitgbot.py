@@ -22,6 +22,7 @@ verbose=True
 #sys.path.append("/opt/xetrapal")
 
 
+#TODO: #5 #4 fix hardcoded path to better approch
 
 memberbotconfig = xetrapal.karma.load_config(configfile="/opt/shrutibot-appdata/shrutitgbot.conf")
 shrutitgbot=xetrapal.telegramastras.XetrapalTelegramBot(config=memberbotconfig, logger=xpal.shrutitgbotxpal.logger)
