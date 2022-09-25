@@ -8,30 +8,47 @@ import io, os
 from google.cloud import speech
 import requests
 app = Flask(__name__)
-
+hostname="http://192.168.1.6"
 @app.route('/listener', methods=["POST"])
 def listener():
      input_json = request.get_json(force=True) 
      input_json['timercvd'] = datetime.now().strftime("%Y-%m-%d %H:%M:%S IST")    
      # send input_json to processing function
+     print(input_json)
      result = process_message(input_json)
      with open(messagelogfile, 'a') as f:
          f.write(str(result) + '\n')
      return jsonify(result)
 
 
+def get_mojogoat_response(message):
+    resturl=":5001/listener"
+    try:
+        response=requests.post(hostname+resturl,json=message)
+        return response.json()
+    except Exception as e:
+        message['error']=str(e)
+        return message
+
+
+
+# Process media messages
+def process_media_message(message):
+    # do something with the message
+    return message
+ 
+# Process text messages
+def process_text_message(message):
+    # if message text starts with GOAT, then send it to mojogoat API
+    if message['text'].startswith("GOAT"):
+        message=get_mojogoat_response(message)
+    return message
+
+
 def process_message(message):
-    if message['media'] is None:
-        delimiter=None
-        if "🔗" in message['text']:
-            delimiter="🔗"
-        if "|" in message['text']:
-            delimiter="|"
-        if delimiter is not None:
-            print(message['text'].split(delimiter))
-            with open("/opt/shrutibot-appdata/samyog-data/relationships","a") as f:
-                f.write(message['text'].replace(delimiter,"|")+"\n")
-        # message['rasaresponse'] = get_rasa_response(message['sender'],message['text'])[0]['text']
+    if "media" not in message.keys() or message['media'] is None:
+        message['response']="Thats strange! I am not programmed to respond to that."
+        message=process_text_message(message)
         return message
     # do something with the message
     if message['media'] is not None and message['media']['type']=='voice' or message['media']['type']=='audio':

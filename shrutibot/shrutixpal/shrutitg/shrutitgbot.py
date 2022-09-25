@@ -127,8 +127,14 @@ def loop(update: Update, context: CallbackContext):
     logger.info("{} {}".format(context.user_data['member'].username,update.message.text))
     text=get_shruti_response(username=context.user_data['member'].username, message=update.message)
     logger.info(str(text))
+    response=text['response']
     if verbose:
         update.message.reply_text(str(text), parse_mode=ParseMode.HTML, reply_markup=ReplyKeyboardRemove())
+    if type(response)==list:
+        for line in response:
+            update.message.reply_text(line, parse_mode=ParseMode.HTML, reply_markup=ReplyKeyboardRemove())
+    else:
+        update.message.reply_text(response, parse_mode=ParseMode.HTML, reply_markup=ReplyKeyboardRemove())
     return PROCESS_MESSAGE
 
 def set_mobile(update: Update, context: CallbackContext):
