@@ -21,6 +21,11 @@ verbose=True
 
 #sys.path.append("/opt/xetrapal")
 
+# FEATURE LIST
+# TODO: #7 FEATURE - Add a function to handle replies to messages
+
+
+
 
 #TODO: #5 #4 fix hardcoded path to better approch
 
@@ -127,7 +132,7 @@ def loop(update: Update, context: CallbackContext):
         return exit(update,context)
     logger.info("{} {}".format(context.user_data['member'].username,update.message.text))
     
-    #TODO: if update is a reply, get the original message and add it to the payload
+    #TODO: #6 if update is a reply, get the original message and add it to the payload
     
     text=get_shruti_response(username=context.user_data['member'].username, message=update.message)
     logger.info(str(text))
