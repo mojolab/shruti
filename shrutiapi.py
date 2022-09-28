@@ -8,7 +8,7 @@ import io, os
 from google.cloud import speech
 import requests
 app = Flask(__name__)
-hostname="http://localhost"
+hostname="http://192.168.1.11"
 @app.route('/listener', methods=["POST"])
 def listener():
      input_json = request.get_json(force=True) 
