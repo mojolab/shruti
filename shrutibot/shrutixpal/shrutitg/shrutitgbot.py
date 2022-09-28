@@ -3,6 +3,7 @@
 # Simple Bot to reply to Telegram messages
 # This program is dedicated to the public domain under the CC0 license.
 # from shrutitgbot.xpal import *
+# SHRUTI - This is a class of bots that Mojolab, Hackergram and other linked entities use for the purpose of comprehension and gateway building
 from . import xpal
 from . import utils
 import requests, json
@@ -20,7 +21,13 @@ verbose=True
 
 #sys.path.append("/opt/xetrapal")
 
+# FEATURE LIST
+# TODO: #7 FEATURE - Add a function to handle replies to messages
 
+
+
+
+#TODO: #5 #4 fix hardcoded path to better approch
 
 memberbotconfig = xetrapal.karma.load_config(configfile="/opt/shrutibot-appdata/shrutitgbot.conf")
 shrutitgbot=xetrapal.telegramastras.XetrapalTelegramBot(config=memberbotconfig, logger=xpal.shrutitgbotxpal.logger)
@@ -60,6 +67,8 @@ def get_shruti_response(username,message,hostname="http://localhost"):
     jsondata['text']=message.text
     jsondata['media']=None
     jsondata['source']="telegram"
+    if "reply_to_message" in message.to_dict().keys():
+        jsondata['reply_to_message']=message.reply_to_message.to_dict()
     if message.photo or message.document or message.voice or message.audio:
         logger.info("Media found")
         media=get_media(message)
@@ -70,7 +79,7 @@ def get_shruti_response(username,message,hostname="http://localhost"):
     response=requests.post(hostname+resturl,json=jsondata)
     return response.json()
 
-
+# Function to present the main menu
 def main_menu(update: Update, context: CallbackContext):
     logger.info(context.user_data)
     user_data = context.user_data
@@ -87,6 +96,8 @@ def main_menu(update: Update, context: CallbackContext):
         return PROCESS_MESSAGE
     except Exception as e:
         logger.error("{} {}".format(type(e), str(e)))
+
+
 
 # Function to download and return path to media if telegram.Message object contains media
 def get_media(message):
@@ -120,14 +131,31 @@ def get_media(message):
         media['type']='audio'
         media['path']=os.path.join(xpal.shrutitgbotxpal.sessionpath, filename)
     return media
+
+
+
 def loop(update: Update, context: CallbackContext):
     if update.message.text=="/bye":
         return exit(update,context)
     logger.info("{} {}".format(context.user_data['member'].username,update.message.text))
+    
+    #TODO: #6 if update is a reply, get the original message and add it to the payload
+    
     text=get_shruti_response(username=context.user_data['member'].username, message=update.message)
     logger.info(str(text))
+    response=text['response']
     if verbose:
-        update.message.reply_text(str(text), parse_mode=ParseMode.HTML, reply_markup=ReplyKeyboardRemove())
+        try:
+            update.message.reply_text(str(text), parse_mode=ParseMode.HTML, reply_markup=ReplyKeyboardRemove())
+        except Exception as e:
+            update.message.reply_text("Error: {}".format(str(e)), parse_mode=ParseMode.HTML, reply_markup=ReplyKeyboardRemove())
+    if type(response)==list:
+        if len(response)>50:
+            response=response[:50]
+        for line in response:
+            update.message.reply_text(line, parse_mode=ParseMode.HTML, reply_markup=ReplyKeyboardRemove())
+    else:
+        update.message.reply_text(response, parse_mode=ParseMode.HTML, reply_markup=ReplyKeyboardRemove())
     return PROCESS_MESSAGE
 
 def set_mobile(update: Update, context: CallbackContext):
