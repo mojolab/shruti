@@ -137,10 +137,7 @@ def get_media(message):
 def loop(update: Update, context: CallbackContext):
     if update.message.text=="/bye":
         return exit(update,context)
-    logger.info("{} {}".format(context.user_data['member'].username,update.message.text))
-    
-    #TODO: #6 if update is a reply, get the original message and add it to the payload
-    
+    logger.info("{} {}".format(context.user_data['member'].username,update.message.text))   
     text=get_shruti_response(username=context.user_data['member'].username, message=update.message)
     logger.info(str(text))
     response=text['response']

@@ -48,6 +48,11 @@ def process_text_message(message):
 def process_message(message):
     if "media" not in message.keys() or message['media'] is None:
         message['response']="Thats strange! I am not programmed to respond to that."
+        try:
+            fort=os.popen("fortune").read()
+            message['response']+="\n...but...here's a funny quote to make your day:\n{}".format(fort)
+        except:
+            pass
         message=process_text_message(message)
         return message
     # do something with the message
