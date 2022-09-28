@@ -77,7 +77,7 @@ def get_shruti_response(username,message,hostname="http://localhost"):
     response=requests.post(hostname+resturl,json=jsondata)
     return response.json()
 
-
+# Function to present the main menu
 def main_menu(update: Update, context: CallbackContext):
     logger.info(context.user_data)
     user_data = context.user_data
@@ -94,6 +94,8 @@ def main_menu(update: Update, context: CallbackContext):
         return PROCESS_MESSAGE
     except Exception as e:
         logger.error("{} {}".format(type(e), str(e)))
+
+
 
 # Function to download and return path to media if telegram.Message object contains media
 def get_media(message):
@@ -127,6 +129,9 @@ def get_media(message):
         media['type']='audio'
         media['path']=os.path.join(xpal.shrutitgbotxpal.sessionpath, filename)
     return media
+
+
+
 def loop(update: Update, context: CallbackContext):
     if update.message.text=="/bye":
         return exit(update,context)
