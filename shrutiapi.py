@@ -90,7 +90,7 @@ def process_message(message):
             print(response)
     return message
 
-
+'''
 def get_rasa_response(username,message_text,hostname="http://172.17.0.1"):
     resturl=":5005/webhooks/rest/webhook"
     jsondata={}
@@ -102,7 +102,7 @@ def get_rasa_response(username,message_text,hostname="http://172.17.0.1"):
     except Exception as e:
         jsondata['error']=str(e)
         return jsondata
-
+'''
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0')
