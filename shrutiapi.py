@@ -1,14 +1,27 @@
 '''
 Simple Flask API to receive a message as a JSON object and return a response as a JSON object.
 '''
-messagelogfile="/opt/shrutibot-appdata/samyog-data/messagelog"
 from datetime import datetime
 from flask import Flask, request, jsonify
-import io, os
+import io, os,sys,json
 from google.cloud import speech
 import requests
 app = Flask(__name__)
-hostname="http://localhost"
+
+
+print(sys.argv[1])
+
+with open(sys.argv[1],'r') as f:
+    apiconfig=json.load(f)
+messagelogfile=apiconfig['messagelog']
+print(messagelogfile)
+servicelist=apiconfig['services']
+mojogoathostname="http://localhost"
+for service in servicelist:
+    if service['servicename']=="mojogoat":
+        mojogoathostname=service['servicehostname'] 
+
+
 @app.route('/listener', methods=["POST"])
 def listener():
      input_json = request.get_json(force=True) 
@@ -16,6 +29,7 @@ def listener():
      # send input_json to processing function
      print(input_json)
      result = process_message(input_json)
+     global messagelogfile
      with open(messagelogfile, 'a') as f:
          f.write(str(result) + '\n')
      return jsonify(result)
@@ -24,7 +38,7 @@ def listener():
 def get_mojogoat_response(message):
     resturl=":5001/listener"
     try:
-        response=requests.post(hostname+resturl,json=message)
+        response=requests.post(mojogoathostname+resturl,json=message)
         return response.json()
     except Exception as e:
         message['error']=str(e)

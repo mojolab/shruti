@@ -31,7 +31,7 @@ fi
 if ! pgrep -x shrutiapi.py > /dev/null
 then
     cd /shruti
-    python3 shrutiapi.py &
+    python3 shrutiapi.py $1 &
 fi
 
 
