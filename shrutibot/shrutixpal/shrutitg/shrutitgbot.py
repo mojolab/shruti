@@ -149,9 +149,16 @@ def loop(update: Update, context: CallbackContext):
     if type(response)==list:
         if len(response)>50:
             response=response[:50]
-        for line in response:
-            update.message.reply_text(line, parse_mode=ParseMode.HTML, reply_markup=ReplyKeyboardRemove())
+        if '' in response:
+            response.remove('')
+        if len(response)>0:
+            for line in response:
+                update.message.reply_text(line, parse_mode=ParseMode.HTML, reply_markup=ReplyKeyboardRemove())
+        else:
+            update.message.reply_text("No response", parse_mode=ParseMode.HTML, reply_markup=ReplyKeyboardRemove())
     else:
+        if type(response)==dict:
+            response=json.dumps(response)
         update.message.reply_text(response, parse_mode=ParseMode.HTML, reply_markup=ReplyKeyboardRemove())
     return PROCESS_MESSAGE
 
