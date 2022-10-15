@@ -54,6 +54,10 @@ def process_media_message(message):
 # Process text messages
 def process_text_message(message):
     # if message text starts with GOAT, then send it to mojogoat API
+
+    if "reply_to_message" in message.keys() and message['reply_to_message'] is not None:
+        message['apply_to']=message['reply_to_message']['text']
+        message.pop('reply_to_message')
     if message['text'].startswith("GOAT") or message['text'].startswith("HERD"):
         message=get_mojogoat_response(message)
     return message
