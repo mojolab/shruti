@@ -16,8 +16,8 @@ from telegram import ReplyKeyboardMarkup, ParseMode, InlineKeyboardMarkup, Inlin
 import xetrapal
 from xetrapal import telegramastras
 import os
-verbose=True
-vocal=True
+verbose=False
+#vocal=True
 #import sys
 
 #sys.path.append("/opt/xetrapal")
@@ -43,7 +43,11 @@ exit_text = u'\U0001F44B Bye'
 #                        ]
 
 main_menu_header_text = '''\
-    Hi! My name is Shruti.\n
+
+Hi! My name is Shruti.
+If you send me an audio prompt, I will convert it to text using the <a href='https://cloud.google.com/speech-to-text'>Google Speech API</a> and then use the <a href='https://beta.openai.com/examples/default-marv-sarcastic-chat'> OpenAI GPT example of Marv the sarcastic chatbot</a> to respond
+I also speak GOAT
+
 '''
 
 # Create a triple
@@ -156,17 +160,17 @@ def loop(update: Update, context: CallbackContext):
                 update.message.reply_text(line, parse_mode=ParseMode.HTML, reply_markup=ReplyKeyboardRemove())
         else:
             update.message.reply_text("No response", parse_mode=ParseMode.HTML, reply_markup=ReplyKeyboardRemove())
-    else:
-        if type(response)==dict:
-            if 'text' in response.keys() and verbose is False:
-                update.message.reply_audio(audio=open(get_audio(response['text'],xpal.shrutitgbotxpal.sessionpath),'rb'), parse_mode=ParseMode.HTML, reply_markup=ReplyKeyboardRemove())
-                response=response['text']
-                
-                
-            else:
-                response=json.dumps(response,ensure_ascii=False)
+    if type(response)==dict:
+        if 'text' not in response.keys() and 'media' not in response.keys():
+            logger.info("Not a text response or media file")
+            update.message.reply_text(json.dumps(response,ensure_ascii=False), parse_mode=ParseMode.HTML, reply_markup=ReplyKeyboardRemove())
+        if 'media' in response.keys() and response['media']['type']=='audio':
+            update.message.reply_audio(audio=open(response['media']['path'],'rb'), parse_mode=ParseMode.HTML, reply_markup=ReplyKeyboardRemove())
+        if 'text' in response.keys():
+            update.message.reply_text(response['text'], parse_mode=ParseMode.HTML, reply_markup=ReplyKeyboardRemove())
+       
+    if type(response)==str:
         update.message.reply_text(response, parse_mode=ParseMode.HTML, reply_markup=ReplyKeyboardRemove())
-        
     return PROCESS_MESSAGE
 
 def set_mobile(update: Update, context: CallbackContext):

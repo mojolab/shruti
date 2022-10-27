@@ -83,15 +83,19 @@ def process_audio_message(message):
     response = client.recognize(config=config, audio=audio)
     # Add the transcript from response.results.alternatives to message['googlespeech]
     if response.results:
-        
-        message['response']['googlespeech'] = {
+        filepath=os.path.split(message['media']['path'])[0]
+        googlespeech = {
                                     "transcript":response.results[0].alternatives[0].transcript,
                                     "confidence":response.results[0].alternatives[0].confidence
                                     } 
         
-        message=process_text_message({'text':"ASKMARV "+message['response']['googlespeech']['transcript']})
+        message=process_text_message({'text':"ASKMARV "+googlespeech['transcript']})
+        message['response']['googlespeech']=googlespeech
+        message['response']['media']={
+            "type":"audio",
+            "path":get_audio(message['response']['text'],filepath)
+        }
     else:
-        print(response)
         message['response']['googlespeech'] = str(response)
         message['response']['text']="Sorry, I didn't get that. Please try again."
     return message
@@ -156,7 +160,10 @@ def get_mojogoat_response(message):
         message['error']=str(e)
         return message
 
-
+def get_audio(text,path):
+    command='espeak -w {} -v en-us "{}"'.format(os.path.join(path,"respfile.wav"),text)
+    os.system(command)
+    return os.path.join(path,"respfile.wav")
 
 '''
 def get_rasa_response(username,message_text,hostname="http://172.17.0.1"):
