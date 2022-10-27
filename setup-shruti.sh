@@ -9,5 +9,6 @@ fi
 
 cd /
 sh -c "$(curl -fsSL https://hackergram.org/xpal/installxpal.sh)"
+apt install fortune -y
 pip3 install mongoengine google-cloud-speech jupyterlab
 
