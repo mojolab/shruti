@@ -111,19 +111,10 @@ def process_text_message(message):
         message=get_mojogoat_response(message)
     if message['text'].startswith("ASKMARV"):
         string=message['text'].split("ASKMARV")[1].lstrip().rstrip()
-        if "{" in string:
-            content=json.loads(string)
-            if "googlespeech" in content.keys():
-                transcript=content['googlespeech']['transcript']
-                if transcript.startswith("my name is"):
-                    message['response']['text']="Hello {}".format(transcript.split("my name is")[1].lstrip().rstrip())
-                else:
-                    message['response']['text']=get_marv_response(transcript)
+        if string.startswith("my name is"):
+            message['response']['text']="Hello {}".format(string.split("my name is")[1].lstrip().rstrip())
         else:
-            if string.startswith("my name is"):
-                message['response']['text']="Hello {}".format(string.split("my name is")[1].lstrip().rstrip())
-            else:
-                message['response']['text']=get_marv_response(string)
+            message['response']['text']=get_marv_response(string)
     if message['response']=={}:
         message['response']['text']="Thats strange! I am not programmed to respond to that."
         try:
