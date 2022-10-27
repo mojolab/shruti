@@ -60,10 +60,22 @@ def process_text_message(message):
         message.pop('reply_to_message')
     if message['text'].startswith("GOAT") or message['text'].startswith("HERD"):
         message=get_mojogoat_response(message)
+    if message['text'].startswith("PROCESS"):
+        string=message['text'].split("PROCESS")[1].lstrip().rstrip()
+        if "{" in string:
+            content=json.loads(string)
+            if "googlespeech" in content.keys():
+                transcript=content['googlespeech']['transcript']
+                if transcript.startswith("my name is"):
+                    message['response']="Hello {}".format(transcript.split("my name is")[1].lstrip().rstrip())
+        else:
+            message['response']={"error":"Invalid input"}
+
     return message
 
 
 def process_message(message):
+    message['response']={}
     if "media" not in message.keys() or message['media'] is None:
         message['response']="Thats strange! I am not programmed to respond to that."
         try:
@@ -92,20 +104,25 @@ def process_message(message):
         config=speech.RecognitionConfig(
             encoding=enc,
             sample_rate_hertz=samplerate,
-            # use_enhanced=True,
+            #use_enhanced=True,
             # A model must be specified to use enhanced model.
-            # model="phone_call",
-            language_code='hi-IN')
+            #model="phone_call",
+            language_code='en-US')
         response = client.recognize(config=config, audio=audio)
         # Add the transcript from response.results.alternatives to message['googlespeech]
         if response.results:
-            message['googlespeech'] = {
+            
+            message['response']['googlespeech'] = {
                                         "transcript":response.results[0].alternatives[0].transcript,
                                         "confidence":response.results[0].alternatives[0].confidence
                                         } 
+            if message['response']['googlespeech']['transcript'].startswith("my name is"):
+                message['response']['text']="Hello {}".format(message['response']['googlespeech']['transcript'].split("my name is")[1].lstrip().rstrip())
             #message['rasaresponse']=get_rasa_response(message['sender'],message['googlespeech']['transcript'])[0]['text']  
         else:
             print(response)
+            message['response']['googlespeech'] = str(response)
+
     return message
 
 '''

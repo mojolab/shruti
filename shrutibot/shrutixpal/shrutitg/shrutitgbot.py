@@ -16,7 +16,7 @@ from telegram import ReplyKeyboardMarkup, ParseMode, InlineKeyboardMarkup, Inlin
 import xetrapal
 from xetrapal import telegramastras
 import os
-verbose=True
+verbose=False
 #import sys
 
 #sys.path.append("/opt/xetrapal")
@@ -139,13 +139,14 @@ def loop(update: Update, context: CallbackContext):
         return exit(update,context)
     logger.info("{} {}".format(context.user_data['member'].username,update.message.text))   
     text=get_shruti_response(username=context.user_data['member'].username, message=update.message)
-    logger.info(str(text))
+    logger.info("Response from Shruti {}")
     response=text['response']
     if verbose:
         try:
             update.message.reply_text(str(text), parse_mode=ParseMode.HTML, reply_markup=ReplyKeyboardRemove())
         except Exception as e:
             update.message.reply_text("Error: {}".format(str(e)), parse_mode=ParseMode.HTML, reply_markup=ReplyKeyboardRemove())
+
     if type(response)==list:
         if len(response)>50:
             response=response[:50]
@@ -158,7 +159,11 @@ def loop(update: Update, context: CallbackContext):
             update.message.reply_text("No response", parse_mode=ParseMode.HTML, reply_markup=ReplyKeyboardRemove())
     else:
         if type(response)==dict:
-            response=json.dumps(response)
+            if 'text' in response.keys() and verbose is False:
+                response=response['text']
+            else:
+                response=json.dumps(response,ensure_ascii=False)
+            print("Sending response as text {}".format(response))
         update.message.reply_text(response, parse_mode=ParseMode.HTML, reply_markup=ReplyKeyboardRemove())
     return PROCESS_MESSAGE
 
