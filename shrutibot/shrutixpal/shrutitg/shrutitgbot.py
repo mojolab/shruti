@@ -24,11 +24,7 @@ verbose=False
 # FEATURE LIST
 # TODO: #7 FEATURE - Add a function to handle replies to messages
 
-
-
-
 #TODO: #5 #4 fix hardcoded path to better approch
-
 memberbotconfig = xetrapal.karma.load_config(configfile="/opt/shrutibot-appdata/shrutitgbot.conf")
 shrutitgbot=xetrapal.telegramastras.XetrapalTelegramBot(config=memberbotconfig, logger=xpal.shrutitgbotxpal.logger)
 logger = shrutitgbot.logger
@@ -58,6 +54,10 @@ def facts_to_str(user_data):
     logger.info("Converted facts to string")
     return "\n".join(facts).join(['\n', '\n'])
 
+def get_audio(text,path):
+    command='espeak -w {} -v en-us "{}"'.format(os.path.join(path,"respfile.wav"),text)
+    os.system(command)
+    return os.path.join(path,"respfile.wav")
 
 # Send a message to and get a response from the locally running Shruti API
 def get_shruti_response(username,message,hostname="http://localhost"):
@@ -98,7 +98,6 @@ def main_menu(update: Update, context: CallbackContext):
         logger.error("{} {}".format(type(e), str(e)))
 
 
-
 # Function to download and return path to media if telegram.Message object contains media
 def get_media(message):
     media={}
@@ -133,7 +132,6 @@ def get_media(message):
     return media
 
 
-
 def loop(update: Update, context: CallbackContext):
     if update.message.text=="/bye":
         return exit(update,context)
@@ -146,7 +144,7 @@ def loop(update: Update, context: CallbackContext):
             update.message.reply_text(str(text), parse_mode=ParseMode.HTML, reply_markup=ReplyKeyboardRemove())
         except Exception as e:
             update.message.reply_text("Error: {}".format(str(e)), parse_mode=ParseMode.HTML, reply_markup=ReplyKeyboardRemove())
-
+    
     if type(response)==list:
         if len(response)>50:
             response=response[:50]
@@ -160,11 +158,14 @@ def loop(update: Update, context: CallbackContext):
     else:
         if type(response)==dict:
             if 'text' in response.keys() and verbose is False:
+                update.message.reply_audio(audio=open(get_audio(response['text'],xpal.shrutitgbotxpal.sessionpath),'rb'), parse_mode=ParseMode.HTML, reply_markup=ReplyKeyboardRemove())
                 response=response['text']
+                
+                
             else:
                 response=json.dumps(response,ensure_ascii=False)
-            print("Sending response as text {}".format(response))
         update.message.reply_text(response, parse_mode=ParseMode.HTML, reply_markup=ReplyKeyboardRemove())
+        
     return PROCESS_MESSAGE
 
 def set_mobile(update: Update, context: CallbackContext):

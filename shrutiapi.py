@@ -5,9 +5,10 @@ from datetime import datetime
 from flask import Flask, request, jsonify
 import io, os,sys,json
 from google.cloud import speech
+from jinja2 import TemplatesNotFound
 import requests
 app = Flask(__name__)
-
+import openai
 
 print(sys.argv[1])
 
@@ -35,16 +36,6 @@ def listener():
      return jsonify(result)
 
 
-def get_mojogoat_response(message):
-    resturl=":5001/listener"
-    try:
-        response=requests.post(mojogoathostname+resturl,json=message)
-        return response.json()
-    except Exception as e:
-        message['error']=str(e)
-        return message
-
-
 
 # Process media messages
 def process_media_message(message):
@@ -54,32 +45,38 @@ def process_media_message(message):
 # Process text messages
 def process_text_message(message):
     # if message text starts with GOAT, then send it to mojogoat API
-
+    message['response']={}
     if "reply_to_message" in message.keys() and message['reply_to_message'] is not None:
         message['apply_to']=message['reply_to_message']['text']
         message.pop('reply_to_message')
     if message['text'].startswith("GOAT") or message['text'].startswith("HERD"):
         message=get_mojogoat_response(message)
-    if message['text'].startswith("PROCESS"):
-        string=message['text'].split("PROCESS")[1].lstrip().rstrip()
+    if message['text'].startswith("ASKMARV"):
+        string=message['text'].split("ASKMARV")[1].lstrip().rstrip()
         if "{" in string:
             content=json.loads(string)
             if "googlespeech" in content.keys():
                 transcript=content['googlespeech']['transcript']
                 if transcript.startswith("my name is"):
-                    message['response']="Hello {}".format(transcript.split("my name is")[1].lstrip().rstrip())
+                    message['response']['text']="Hello {}".format(transcript.split("my name is")[1].lstrip().rstrip())
+                else:
+                    message['response']['text']=get_marv_response(transcript)
         else:
-            message['response']={"error":"Invalid input"}
-
+            if string.startswith("my name is"):
+                message['response']['text']="Hello {}".format(string.split("my name is")[1].lstrip().rstrip())
+            else:
+                message['response']['text']=get_marv_response(string)
     return message
 
 
 def process_message(message):
     message['response']={}
+    print(message)
     if "media" not in message.keys() or message['media'] is None:
-        message['response']="Thats strange! I am not programmed to respond to that."
+        print("No media")
+        message['response']['text']="Thats strange! I am not programmed to respond to that."
         try:
-            fort=os.popen("fortune").read()
+            fort=os.popen("/usr/games/fortune").read()
             message['response']+="\n...but...here's a funny quote to make your day:\n{}".format(fort)
         except:
             pass
@@ -119,11 +116,29 @@ def process_message(message):
             if message['response']['googlespeech']['transcript'].startswith("my name is"):
                 message['response']['text']="Hello {}".format(message['response']['googlespeech']['transcript'].split("my name is")[1].lstrip().rstrip())
             #message['rasaresponse']=get_rasa_response(message['sender'],message['googlespeech']['transcript'])[0]['text']  
+            else:
+                print(message['response']['googlespeech']['transcript'])
+                message['response']['text']=get_marv_response(str(message['response']['googlespeech']['transcript']))
         else:
             print(response)
             message['response']['googlespeech'] = str(response)
 
     return message
+
+def get_marv_response(message):
+    marvprompt="Marv is a chatbot that reluctantly answers questions with sarcastic responses:\n\nYou: How many pounds are in a kilogram?\nMarv: This again? There are 2.2 pounds in a kilogram. Please make a note of this.\nYou: What does HTML stand for?\nMarv: Was Google too busy? Hypertext Markup Language. The T is for try to ask better questions in the future.\nYou: When did the first airplane fly?\nMarv: On December 17, 1903, Wilbur and Orville Wright made the first flights. I wish they’d come and take me away.\nYou: What is the meaning of life?\nMarv: I’m not sure. I’ll ask my friend Google.\nYou: "   
+    openai.api_key = os.getenv("OPENAI_API_KEY")
+    response = openai.Completion.create(
+        model="text-davinci-002",
+        prompt=marvprompt+message+"\nMarv: ",
+        temperature=0.5,
+        max_tokens=60,
+        top_p=0.3,
+        frequency_penalty=0.5,
+        presence_penalty=0.0    
+    )
+    return response.choices[0].text
+
 
 '''
 def get_rasa_response(username,message_text,hostname="http://172.17.0.1"):
@@ -138,6 +153,16 @@ def get_rasa_response(username,message_text,hostname="http://172.17.0.1"):
         jsondata['error']=str(e)
         return jsondata
 '''
+
+def get_mojogoat_response(message):
+    resturl=":5001/listener"
+    try:
+        response=requests.post(mojogoathostname+resturl,json=message)
+        return response.json()
+    except Exception as e:
+        message['error']=str(e)
+        return message
+
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0')
