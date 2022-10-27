@@ -16,7 +16,8 @@ from telegram import ReplyKeyboardMarkup, ParseMode, InlineKeyboardMarkup, Inlin
 import xetrapal
 from xetrapal import telegramastras
 import os
-verbose=True
+verbose=False
+#vocal=True
 #import sys
 
 #sys.path.append("/opt/xetrapal")
@@ -24,11 +25,7 @@ verbose=True
 # FEATURE LIST
 # TODO: #7 FEATURE - Add a function to handle replies to messages
 
-
-
-
 #TODO: #5 #4 fix hardcoded path to better approch
-
 memberbotconfig = xetrapal.karma.load_config(configfile="/opt/shrutibot-appdata/shrutitgbot.conf")
 shrutitgbot=xetrapal.telegramastras.XetrapalTelegramBot(config=memberbotconfig, logger=xpal.shrutitgbotxpal.logger)
 logger = shrutitgbot.logger
@@ -46,7 +43,11 @@ exit_text = u'\U0001F44B Bye'
 #                        ]
 
 main_menu_header_text = '''\
-    Hi! My name is Shruti.\n
+
+Hi! My name is Shruti.
+If you send me an audio prompt, I will convert it to text using the <a href='https://cloud.google.com/speech-to-text'>Google Speech API</a> and then use the <a href='https://beta.openai.com/examples/default-marv-sarcastic-chat'> OpenAI GPT example of Marv the sarcastic chatbot</a> to respond
+I also speak GOAT
+
 '''
 
 # Create a triple
@@ -58,6 +59,10 @@ def facts_to_str(user_data):
     logger.info("Converted facts to string")
     return "\n".join(facts).join(['\n', '\n'])
 
+def get_audio(text,path):
+    command='espeak -w {} -v en-us "{}"'.format(os.path.join(path,"respfile.wav"),text)
+    os.system(command)
+    return os.path.join(path,"respfile.wav")
 
 # Send a message to and get a response from the locally running Shruti API
 def get_shruti_response(username,message,hostname="http://localhost"):
@@ -98,7 +103,6 @@ def main_menu(update: Update, context: CallbackContext):
         logger.error("{} {}".format(type(e), str(e)))
 
 
-
 # Function to download and return path to media if telegram.Message object contains media
 def get_media(message):
     media={}
@@ -133,19 +137,19 @@ def get_media(message):
     return media
 
 
-
 def loop(update: Update, context: CallbackContext):
     if update.message.text=="/bye":
         return exit(update,context)
-    logger.info("{} {}".format(context.user_data['member'].username,update.message.text))   
-    text=get_shruti_response(username=context.user_data['member'].username, message=update.message)
-    logger.info(str(text))
-    response=text['response']
+    logger.info("Received from: {} message: {}".format(context.user_data['member'].username,update.message))   
+    message=get_shruti_response(username=context.user_data['member'].username, message=update.message)
+    response=message['response']
+    logger.info("Response: {}".format(response))
     if verbose:
         try:
-            update.message.reply_text(str(text), parse_mode=ParseMode.HTML, reply_markup=ReplyKeyboardRemove())
+            update.message.reply_text(str(message), parse_mode=ParseMode.HTML, reply_markup=ReplyKeyboardRemove())
         except Exception as e:
             update.message.reply_text("Error: {}".format(str(e)), parse_mode=ParseMode.HTML, reply_markup=ReplyKeyboardRemove())
+    
     if type(response)==list:
         if len(response)>50:
             response=response[:50]
@@ -156,9 +160,16 @@ def loop(update: Update, context: CallbackContext):
                 update.message.reply_text(line, parse_mode=ParseMode.HTML, reply_markup=ReplyKeyboardRemove())
         else:
             update.message.reply_text("No response", parse_mode=ParseMode.HTML, reply_markup=ReplyKeyboardRemove())
-    else:
-        if type(response)==dict:
-            response=json.dumps(response)
+    if type(response)==dict:
+        if 'text' not in response.keys() and 'media' not in response.keys():
+            logger.info("Not a text response or media file")
+            update.message.reply_text(json.dumps(response,ensure_ascii=False), parse_mode=ParseMode.HTML, reply_markup=ReplyKeyboardRemove())
+        if 'media' in response.keys() and response['media']['type']=='audio':
+            update.message.reply_audio(audio=open(response['media']['path'],'rb'), parse_mode=ParseMode.HTML, reply_markup=ReplyKeyboardRemove())
+        if 'text' in response.keys():
+            update.message.reply_text(response['text'], parse_mode=ParseMode.HTML, reply_markup=ReplyKeyboardRemove())
+       
+    if type(response)==str:
         update.message.reply_text(response, parse_mode=ParseMode.HTML, reply_markup=ReplyKeyboardRemove())
     return PROCESS_MESSAGE
 
