@@ -44,7 +44,7 @@ exit_text = u'\U0001F44B Bye'
 
 main_menu_header_text = '''\
 
-Hi! My name is Shruti.
+Hi! My name is <a href='https://github.com/mojolab/shruti'>Shruti</a>.
 If you send me an audio prompt, I will convert it to text using the <a href='https://cloud.google.com/speech-to-text'>Google Speech API</a> and then use the <a href='https://beta.openai.com/examples/default-marv-sarcastic-chat'> OpenAI GPT example of Marv the sarcastic chatbot</a> to respond
 I also speak GOAT
 
