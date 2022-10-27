@@ -16,7 +16,8 @@ from telegram import ReplyKeyboardMarkup, ParseMode, InlineKeyboardMarkup, Inlin
 import xetrapal
 from xetrapal import telegramastras
 import os
-verbose=False
+verbose=True
+vocal=True
 #import sys
 
 #sys.path.append("/opt/xetrapal")
@@ -135,7 +136,7 @@ def get_media(message):
 def loop(update: Update, context: CallbackContext):
     if update.message.text=="/bye":
         return exit(update,context)
-    logger.info("Received from: {} message: {}".format(context.user_data['member'].username,update.message.text))   
+    logger.info("Received from: {} message: {}".format(context.user_data['member'].username,update.message))   
     message=get_shruti_response(username=context.user_data['member'].username, message=update.message)
     response=message['response']
     logger.info("Response: {}".format(response))

@@ -47,44 +47,7 @@ def process_message(message):
         return message
     # do something with the message
     if message['media'] is not None and message['media']['type']=='voice' or message['media']['type']=='audio':
-        samplerate=int(os.popen("/usr/bin/ffprobe -v error -show_streams {} | grep sample_rate".format(message['media']['path'])).read().strip().split("=")[1])
-        if samplerate>16000:
-            samplerate=16000
-        filetype = message['media']['path'].split(".")[-1]
-        if filetype == 'ogg' or filetype == 'opus':
-            enc=speech.RecognitionConfig.AudioEncoding.OGG_OPUS
-        elif filetype == 'wav':
-            enc=speech.RecognitionConfig.AudioEncoding.LINEAR16
-        
-        print("Encoding: {}, Sample Rate:{}".format(enc,samplerate))
-        client=speech.SpeechClient()
-        with io.open(message['media']['path'], 'rb') as audio_file:
-            content = audio_file.read()
-        audio=speech.RecognitionAudio(content=content)
-        config=speech.RecognitionConfig(
-            encoding=enc,
-            sample_rate_hertz=samplerate,
-            #use_enhanced=True,
-            # A model must be specified to use enhanced model.
-            #model="phone_call",
-            language_code='en-US')
-        response = client.recognize(config=config, audio=audio)
-        # Add the transcript from response.results.alternatives to message['googlespeech]
-        if response.results:
-            
-            message['response']['googlespeech'] = {
-                                        "transcript":response.results[0].alternatives[0].transcript,
-                                        "confidence":response.results[0].alternatives[0].confidence
-                                        } 
-            if message['response']['googlespeech']['transcript'].startswith("my name is"):
-                message['response']['text']="Hello {}".format(message['response']['googlespeech']['transcript'].split("my name is")[1].lstrip().rstrip())
-            #message['rasaresponse']=get_rasa_response(message['sender'],message['googlespeech']['transcript'])[0]['text']  
-            else:
-                print(message['response']['googlespeech']['transcript'])
-                message['response']['text']=get_marv_response(str(message['response']['googlespeech']['transcript']))
-        else:
-            print(response)
-            message['response']['googlespeech'] = str(response)
+       message=process_audio_message(message)
 
     return message
 
@@ -93,9 +56,44 @@ def process_message(message):
 
 
 
-# Process media messages
-def process_media_message(message):
+# Process audio messages
+def process_audio_message(message):
     # do something with the message
+    samplerate=int(os.popen("/usr/bin/ffprobe -v error -show_streams {} | grep sample_rate".format(message['media']['path'])).read().strip().split("=")[1])
+    if samplerate>16000:
+        samplerate=16000
+    filetype = message['media']['path'].split(".")[-1]
+    if filetype == 'ogg' or filetype == 'opus':
+        enc=speech.RecognitionConfig.AudioEncoding.OGG_OPUS
+    elif filetype == 'wav':
+        enc=speech.RecognitionConfig.AudioEncoding.LINEAR16
+    
+    print("Encoding: {}, Sample Rate:{}".format(enc,samplerate))
+    client=speech.SpeechClient()
+    with io.open(message['media']['path'], 'rb') as audio_file:
+        content = audio_file.read()
+    audio=speech.RecognitionAudio(content=content)
+    config=speech.RecognitionConfig(
+        encoding=enc,
+        sample_rate_hertz=samplerate,
+        #use_enhanced=True,
+        # A model must be specified to use enhanced model.
+        #model="phone_call",
+        language_code='en-US')
+    response = client.recognize(config=config, audio=audio)
+    # Add the transcript from response.results.alternatives to message['googlespeech]
+    if response.results:
+        
+        message['response']['googlespeech'] = {
+                                    "transcript":response.results[0].alternatives[0].transcript,
+                                    "confidence":response.results[0].alternatives[0].confidence
+                                    } 
+        
+        message=process_text_message({'text':"ASKMARV "+message['response']['googlespeech']['transcript']})
+    else:
+        print(response)
+        message['response']['googlespeech'] = str(response)
+        message['response']['text']="Sorry, I didn't get that. Please try again."
     return message
  
 # Process text messages
