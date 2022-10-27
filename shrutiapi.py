@@ -58,7 +58,7 @@ def process_message(message):
 
 # Process audio messages
 def process_audio_message(message):
-    # do something with the message
+    # Extract encoding and sample rate from media file
     samplerate=int(os.popen("/usr/bin/ffprobe -v error -show_streams {} | grep sample_rate".format(message['media']['path'])).read().strip().split("=")[1])
     if samplerate>16000:
         samplerate=16000
@@ -69,6 +69,7 @@ def process_audio_message(message):
         enc=speech.RecognitionConfig.AudioEncoding.LINEAR16
     
     print("Encoding: {}, Sample Rate:{}".format(enc,samplerate))
+    # Send audio file to Google Speech API
     client=speech.SpeechClient()
     with io.open(message['media']['path'], 'rb') as audio_file:
         content = audio_file.read()
@@ -81,14 +82,13 @@ def process_audio_message(message):
         #model="phone_call",
         language_code='en-US')
     response = client.recognize(config=config, audio=audio)
-    # Add the transcript from response.results.alternatives to message['googlespeech]
+    # Process the response from Speech AI
     if response.results:
         filepath=os.path.split(message['media']['path'])[0]
         googlespeech = {
-                                    "transcript":response.results[0].alternatives[0].transcript,
-                                    "confidence":response.results[0].alternatives[0].confidence
-                                    } 
-        
+                            "transcript":response.results[0].alternatives[0].transcript,
+                            "confidence":response.results[0].alternatives[0].confidence
+                        } 
         message=process_text_message({'text':"ASKMARV "+googlespeech['transcript']})
         message['response']['googlespeech']=googlespeech
         message['response']['media']={
