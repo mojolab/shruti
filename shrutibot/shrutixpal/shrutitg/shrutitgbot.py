@@ -135,13 +135,13 @@ def get_media(message):
 def loop(update: Update, context: CallbackContext):
     if update.message.text=="/bye":
         return exit(update,context)
-    logger.info("{} {}".format(context.user_data['member'].username,update.message.text))   
-    text=get_shruti_response(username=context.user_data['member'].username, message=update.message)
-    logger.info("Response from Shruti {}")
-    response=text['response']
+    logger.info("Received from: {} message: {}".format(context.user_data['member'].username,update.message.text))   
+    message=get_shruti_response(username=context.user_data['member'].username, message=update.message)
+    response=message['response']
+    logger.info("Response: {}".format(response))
     if verbose:
         try:
-            update.message.reply_text(str(text), parse_mode=ParseMode.HTML, reply_markup=ReplyKeyboardRemove())
+            update.message.reply_text(str(message), parse_mode=ParseMode.HTML, reply_markup=ReplyKeyboardRemove())
         except Exception as e:
             update.message.reply_text("Error: {}".format(str(e)), parse_mode=ParseMode.HTML, reply_markup=ReplyKeyboardRemove())
     

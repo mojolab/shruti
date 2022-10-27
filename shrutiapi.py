@@ -14,6 +14,7 @@ print(sys.argv[1])
 
 with open(sys.argv[1],'r') as f:
     apiconfig=json.load(f)
+
 messagelogfile=apiconfig['messagelog']
 print(messagelogfile)
 servicelist=apiconfig['services']
@@ -37,49 +38,11 @@ def listener():
 
 
 
-# Process media messages
-def process_media_message(message):
-    # do something with the message
-    return message
- 
-# Process text messages
-def process_text_message(message):
-    # if message text starts with GOAT, then send it to mojogoat API
-    message['response']={}
-    if "reply_to_message" in message.keys() and message['reply_to_message'] is not None:
-        message['apply_to']=message['reply_to_message']['text']
-        message.pop('reply_to_message')
-    if message['text'].startswith("GOAT") or message['text'].startswith("HERD"):
-        message=get_mojogoat_response(message)
-    if message['text'].startswith("ASKMARV"):
-        string=message['text'].split("ASKMARV")[1].lstrip().rstrip()
-        if "{" in string:
-            content=json.loads(string)
-            if "googlespeech" in content.keys():
-                transcript=content['googlespeech']['transcript']
-                if transcript.startswith("my name is"):
-                    message['response']['text']="Hello {}".format(transcript.split("my name is")[1].lstrip().rstrip())
-                else:
-                    message['response']['text']=get_marv_response(transcript)
-        else:
-            if string.startswith("my name is"):
-                message['response']['text']="Hello {}".format(string.split("my name is")[1].lstrip().rstrip())
-            else:
-                message['response']['text']=get_marv_response(string)
-    return message
-
-
 def process_message(message):
     message['response']={}
     print(message)
     if "media" not in message.keys() or message['media'] is None:
         print("No media")
-        message['response']['text']="Thats strange! I am not programmed to respond to that."
-        try:
-            fort=os.popen("/usr/games/fortune").read()
-            message['response']+="\n...but...here's a funny quote to make your day:\n{}".format(fort)
-        except:
-            pass
         message=process_text_message(message)
         return message
     # do something with the message
@@ -125,6 +88,51 @@ def process_message(message):
 
     return message
 
+
+
+
+
+
+# Process media messages
+def process_media_message(message):
+    # do something with the message
+    return message
+ 
+# Process text messages
+def process_text_message(message):
+    # if message text starts with GOAT, then send it to mojogoat API
+    message['response']={}
+    if "reply_to_message" in message.keys() and message['reply_to_message'] is not None:
+        message['apply_to']=message['reply_to_message']['text']
+        message.pop('reply_to_message')
+    if message['text'].startswith("GOAT") or message['text'].startswith("HERD"):
+        message=get_mojogoat_response(message)
+    if message['text'].startswith("ASKMARV"):
+        string=message['text'].split("ASKMARV")[1].lstrip().rstrip()
+        if "{" in string:
+            content=json.loads(string)
+            if "googlespeech" in content.keys():
+                transcript=content['googlespeech']['transcript']
+                if transcript.startswith("my name is"):
+                    message['response']['text']="Hello {}".format(transcript.split("my name is")[1].lstrip().rstrip())
+                else:
+                    message['response']['text']=get_marv_response(transcript)
+        else:
+            if string.startswith("my name is"):
+                message['response']['text']="Hello {}".format(string.split("my name is")[1].lstrip().rstrip())
+            else:
+                message['response']['text']=get_marv_response(string)
+    if message['response']=={}:
+        message['response']['text']="Thats strange! I am not programmed to respond to that."
+        try:
+            fort=os.popen("/usr/games/fortune").read()
+            message['response']['text']+="\n...but...here's a funny quote to make your day:\n{}".format(fort)
+        except:
+            pass
+    return message
+
+
+
 def get_marv_response(message):
     marvprompt="Marv is a chatbot that reluctantly answers questions with sarcastic responses:\n\nYou: How many pounds are in a kilogram?\nMarv: This again? There are 2.2 pounds in a kilogram. Please make a note of this.\nYou: What does HTML stand for?\nMarv: Was Google too busy? Hypertext Markup Language. The T is for try to ask better questions in the future.\nYou: When did the first airplane fly?\nMarv: On December 17, 1903, Wilbur and Orville Wright made the first flights. I wish they’d come and take me away.\nYou: What is the meaning of life?\nMarv: I’m not sure. I’ll ask my friend Google.\nYou: "   
     openai.api_key = os.getenv("OPENAI_API_KEY")
@@ -140,6 +148,18 @@ def get_marv_response(message):
     return response.choices[0].text
 
 
+
+def get_mojogoat_response(message):
+    resturl=":5001/listener"
+    try:
+        response=requests.post(mojogoathostname+resturl,json=message)
+        return response.json()
+    except Exception as e:
+        message['error']=str(e)
+        return message
+
+
+
 '''
 def get_rasa_response(username,message_text,hostname="http://172.17.0.1"):
     resturl=":5005/webhooks/rest/webhook"
@@ -153,16 +173,6 @@ def get_rasa_response(username,message_text,hostname="http://172.17.0.1"):
         jsondata['error']=str(e)
         return jsondata
 '''
-
-def get_mojogoat_response(message):
-    resturl=":5001/listener"
-    try:
-        response=requests.post(mojogoathostname+resturl,json=message)
-        return response.json()
-    except Exception as e:
-        message['error']=str(e)
-        return message
-
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0')
