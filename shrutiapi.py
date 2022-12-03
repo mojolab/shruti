@@ -37,7 +37,6 @@ def listener():
      return jsonify(result)
 
 
-
 def process_message(message):
     message['response']={}
     #print(message)
@@ -50,10 +49,6 @@ def process_message(message):
        message=process_audio_message(message)
 
     return message
-
-
-
-
 
 
 # Process audio messages
@@ -99,7 +94,8 @@ def process_audio_message(message):
         message['response']['googlespeech'] = str(response)
         message['response']['text']="Sorry, I didn't get that. Please try again."
     return message
- 
+
+
 # Process text messages
 def process_text_message(message):
     # if message text starts with GOAT, then send it to mojogoat API
@@ -123,7 +119,6 @@ def process_text_message(message):
         except:
             pass
     return message
-
 
 
 def get_marv_response(message):
@@ -151,10 +146,12 @@ def get_mojogoat_response(message):
         message['error']=str(e)
         return message
 
+
 def get_audio(text,path):
     command='espeak -w {} -v en-us "{}"'.format(os.path.join(path,"respfile.wav"),text)
     os.system(command)
     return os.path.join(path,"respfile.wav")
+
 
 '''
 def get_rasa_response(username,message_text,hostname="http://172.17.0.1"):
