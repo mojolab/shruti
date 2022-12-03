@@ -151,6 +151,7 @@ def loop(update: Update, context: CallbackContext):
             update.message.reply_text("Error: {}".format(str(e)), parse_mode=ParseMode.HTML, reply_markup=ReplyKeyboardRemove())
     
     if type(response)==list:
+        logger.info("Response is a list")
         if len(response)>50:
             response=response[:50]
         if '' in response:
@@ -161,6 +162,7 @@ def loop(update: Update, context: CallbackContext):
         else:
             update.message.reply_text("No response", parse_mode=ParseMode.HTML, reply_markup=ReplyKeyboardRemove())
     if type(response)==dict:
+        logger.info("Response is a dict")
         if 'text' not in response.keys() and 'media' not in response.keys():
             logger.info("Not a text response or media file")
             update.message.reply_text(json.dumps(response,ensure_ascii=False), parse_mode=ParseMode.HTML, reply_markup=ReplyKeyboardRemove())
@@ -170,6 +172,7 @@ def loop(update: Update, context: CallbackContext):
             update.message.reply_text(response['text'], parse_mode=ParseMode.HTML, reply_markup=ReplyKeyboardRemove())
        
     if type(response)==str:
+        logger.info("Returning string response")
         update.message.reply_text(response, parse_mode=ParseMode.HTML, reply_markup=ReplyKeyboardRemove())
     return PROCESS_MESSAGE
 

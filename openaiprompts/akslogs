@@ -1,0 +1,40 @@
+Extracting JSON object from unstructured text
+
+Input:
+#akslogs
+5am 150ml
+med atarax
+Poopy at 10 am
+ghokko, happy baby
+Output:
+{"feeds":[{"time":"0500","feedsize":"150ml"}],"meds":[{"time":"0500","medname":"atarax"}],"notes":"med atarax, Poopy at 10 am, ghokko, happy baby"}
+
+Input:
+#akslogs
+6am 130ml
+med atarax,mucolite,calpol
+Poopy at 10 am
+ghokko, happy baby
+Output:
+{"feeds":[{"time":"0600","feedsize":"130ml",}],"meds":[{"time":"0600","medname":"atarax"},{"time":"0600","medname":"mucolite"},{"time":"0600","medname":"calpol"}],"notes":"Poopy at 10 am, ghokko, happy baby"}
+
+Input:
+#akslogs
+8pm 90ml
+2100 100ml
+med jalwa,permite,atarax
+Pooped at 7pm
+fussy around brahmamuhurat
+Output:
+{"feeds":[{"time":"2000","feedsize":"90ml"},{"time":"2100","feedsize":"100ml"}],"meds":[{"time":"2100","medname":"jalwa"},{"time":"2100","medname":"permite"},{"time":"2100","medname":"atarax"}],"notes":"Pooped at 7pm, fussy around brahmamuhurat"}
+
+Input:
+#akslogs
+10am 100ml
+med atarax
+Poopy at 10 am
+burpies, diaper change
+Output:
+{"feeds":[{"time":"1000","feedsize":"100ml"}],"meds":[{"time":"1000","medname":"atarax"}],"notes":"Poopy at 10 am, burpies, diaper change"}
+
+Input:

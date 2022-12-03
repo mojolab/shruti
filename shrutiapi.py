@@ -1,7 +1,7 @@
 '''
 Simple Flask API to receive a message as a JSON object and return a response as a JSON object.
 '''
-from datetime import datetime
+from datetime import date, datetime
 from flask import Flask, request, jsonify
 import io, os,sys,json
 from google.cloud import speech
@@ -42,6 +42,7 @@ def process_message(message):
     #print(message)
     if "media" not in message.keys() or message['media'] is None:
         print("No media")
+        print(message)
         message=process_text_message(message)
         return message
     # do something with the message
@@ -111,6 +112,12 @@ def process_text_message(message):
             message['response']['text']="Hello {}".format(string.split("my name is")[1].lstrip().rstrip())
         else:
             message['response']['text']=get_marv_response(string)
+    if message['text'].startswith("#akslogs"):
+        string=message['text'].lstrip().rstrip()#.split("ASKMARV")[1]
+        if string.startswith("my name is"):
+            message['response']['text']="Hello {}".format(string.split("my name is")[1].lstrip().rstrip())
+        else:
+            message['response']['text']=get_akslogs_response(string)+"\nEntered by:{}".format(message['sender'])
     if message['response']=={}:
         message['response']['text']="Thats strange! I am not programmed to respond to that."
         try:
@@ -122,19 +129,58 @@ def process_text_message(message):
 
 
 def get_marv_response(message):
-    marvprompt="Marv is a chatbot that reluctantly answers questions with sarcastic responses:\n\nYou: How many pounds are in a kilogram?\nMarv: This again? There are 2.2 pounds in a kilogram. Please make a note of this.\nYou: What does HTML stand for?\nMarv: Was Google too busy? Hypertext Markup Language. The T is for try to ask better questions in the future.\nYou: When did the first airplane fly?\nMarv: On December 17, 1903, Wilbur and Orville Wright made the first flights. I wish they’d come and take me away.\nYou: What is the meaning of life?\nMarv: I’m not sure. I’ll ask my friend Google.\nYou: "   
+    with open("openaiprompts/sarcasticmarv",'r') as f:
+        marvprompt=f.read()
     openai.api_key = os.getenv("OPENAI_API_KEY")
     response = openai.Completion.create(
         model="text-davinci-002",
-        prompt=marvprompt+message+"\nMarv: ",
+        prompt=marvprompt+message+"\nOutput: ",
         temperature=0.5,
-        max_tokens=60,
+        max_tokens=512,
         top_p=0.3,
         frequency_penalty=0.5,
         presence_penalty=0.0    
     )
-    return response.choices[0].text
+    try:
+        responsejson=json.loads(response.choices[0].text)
+        return responsejson
+    except:
+        print("returning text")
+        return response.choices[0].text
 
+
+
+
+def get_akslogs_response(message):
+    with open("openaiprompts/akslogs",'r') as f:
+        marvprompt=f.read()
+    openai.api_key = os.getenv("OPENAI_API_KEY")
+    response = openai.Completion.create(
+        model="text-davinci-002",
+        prompt=marvprompt+message+"\nOutput: ",
+        temperature=0.5,
+        max_tokens=512,
+        top_p=0.3,
+        frequency_penalty=0.5,
+        presence_penalty=0.0    
+    )
+    try:
+        responsejson=json.loads(response.choices[0].text)
+        responsetext="#AKSLOGENTRY {}\n".format(datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+        if "feeds" in responsejson.keys():
+            responsetext+="<b>Feeds</b>:\n"
+            for feed in responsejson['feeds']:
+                responsetext+="<i>Time</i>: {}\t<i>Size</i>: {}\n\n".format(feed['time'],feed['feedsize'])
+        if "meds" in responsejson.keys():
+            responsetext+="<b>Meds</b>:\n"
+            for med in responsejson['meds']:
+                responsetext+="<i>Time</i>: {}\t<i>Med</i>: {}\n\n".format(med['time'],med['medname'])
+        if "notes" in responsejson.keys():
+            responsetext+="<b>Notes</b>:\n{}".format(responsejson['notes'])
+        return responsetext
+    except Exception as e:
+        print(str(e))
+        return response.choices[0].text
 
 
 def get_mojogoat_response(message):
