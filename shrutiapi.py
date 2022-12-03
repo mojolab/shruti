@@ -117,7 +117,7 @@ def process_text_message(message):
         if string.startswith("my name is"):
             message['response']['text']="Hello {}".format(string.split("my name is")[1].lstrip().rstrip())
         else:
-            message['response']['text']=get_akslogs_response(string)+"\nEntered by:{}".format(message['sender'])
+            message['response']['text']=get_akslogs_response(string)+"\n\n<b><i>Entered by</b></i>:{}".format(message['sender'])
     if message['response']=={}:
         message['response']['text']="Thats strange! I am not programmed to respond to that."
         try:
