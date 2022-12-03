@@ -29,7 +29,7 @@ def listener():
      input_json = request.get_json(force=True) 
      input_json['timercvd'] = datetime.now().strftime("%Y-%m-%d %H:%M:%S IST")    
      # send input_json to processing function
-     print(input_json)
+     #print(input_json)
      result = process_message(input_json)
      global messagelogfile
      with open(messagelogfile, 'a') as f:
@@ -40,7 +40,7 @@ def listener():
 
 def process_message(message):
     message['response']={}
-    print(message)
+    #print(message)
     if "media" not in message.keys() or message['media'] is None:
         print("No media")
         message=process_text_message(message)
