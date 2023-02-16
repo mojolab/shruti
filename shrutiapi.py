@@ -97,7 +97,7 @@ def process_audio_message(message):
     return message
 
 
-# Process text messages
+# Process text messages based on the text and return a response
 def process_text_message(message):
     # if message text starts with GOAT, then send it to mojogoat API
     message['response']={}
@@ -113,7 +113,7 @@ def process_text_message(message):
         else:
             message['response']['text']=get_marv_response(string)
     if message['text'].startswith("#akslogs"):
-        string=message['text'].lstrip().rstrip()#.split("ASKMARV")[1]
+        string=message['text'].lstrip().rstrip()
         if string.startswith("my name is"):
             message['response']['text']="Hello {}".format(string.split("my name is")[1].lstrip().rstrip())
         else:
